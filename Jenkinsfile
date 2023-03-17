@@ -2,15 +2,30 @@ pipeline {
     agent any
     
     stages {
-        stage('Build') {
+        stage('Build Docker image') {
             steps {
-                sh 'docker image build -t my-app .'
+                script {
+                    docker.build("my-app:latest", ".")
+                }
             }
         }
-        stage('Run') {
+        
+        stage('Run Docker container') {
             steps {
-                sh 'docker run -d -p 5000:5000 my-app'
+                script {
+                    docker.run("my-app:latest", "-p 5000:5000")
+                }
             }
+        }
+    }
+    
+    post {
+        success {
+            echo 'Pipeline finished successfully!'
+        }
+        
+        failure {
+            echo 'Pipeline failed.'
         }
     }
 }
